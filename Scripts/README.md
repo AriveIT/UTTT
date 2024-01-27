@@ -104,6 +104,9 @@ Depth looks to be at least 6
 ## Version 11:
 TT for iterative deepening.
 
+###Stats:
+Win/Loss/Tie vs V10: 7 / 2 / 1
+
 
 
 
