@@ -4,15 +4,12 @@ from functools import lru_cache
 
 # https://github.com/uvicaiclub/UTTT/tree/main
 
-class agent:
+class agent():
     
     # Local coordinates: coordinates for a mini board: Range = (0,0) --> (2,2)
     # Global coordinates: coordinates for complete board: Range = (0,0) --> (8,8)
 
     ACTIVE = 0
-    SENDING_BIASES = np.array([[1, 2, 1],
-                               [2, -1, 2],
-                               [1, 2, 1]])
     MAN_BIASES = np.array([[0.6, 0.25, 0.6],
                            [0.25, 1, 0.25],
                            [0.6, 0.25, 0.6]])
@@ -52,16 +49,15 @@ class agent:
             best_move = move
             best_eval = eval
 
-
             cur_depth += 1
 
+        """ Stats """
         #print(f"total time: {time.perf_counter() - start_time}")
-            
-        if best_eval == float("inf"): self.evaluation_over_time.append(100)
-        elif best_eval == float("-inf"): self.evaluation_over_time.append(-100)
-        else: self.evaluation_over_time.append(best_eval)
-        self.depth_over_time.append(cur_depth - 1)
-        self.num_states_over_time.append(self.states_evaluated)
+        # if best_eval == float("inf"): self.evaluation_over_time.append(100)
+        # elif best_eval == float("-inf"): self.evaluation_over_time.append(-100)
+        # else: self.evaluation_over_time.append(best_eval)
+        # self.depth_over_time.append(cur_depth - 1)
+        # self.num_states_over_time.append(self.states_evaluated)
 
         return best_move
 
@@ -206,16 +202,7 @@ class agent:
         self.tt_time += (time.perf_counter() - start_time)
 
         return
-
-
-    """ Not used """
-    # dont want to give opponent center square or unactive box
-    def active_box_score(self, active_box):
-        if active_box == (-1,-1): return -2
-        return self.SENDING_BIASES[active_box[0],active_box[1]]
  
-    
-
     """ 
             Position Evaluation
     """

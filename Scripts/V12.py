@@ -1,20 +1,15 @@
 import numpy as np
 import time
+from functools import lru_cache
 
 # https://github.com/uvicaiclub/UTTT/tree/main
 
-
-# figure out how to not throw out work in final iteration
-
-class agent:
+class agent():
     
     # Local coordinates: coordinates for a mini board: Range = (0,0) --> (2,2)
     # Global coordinates: coordinates for complete board: Range = (0,0) --> (8,8)
 
     ACTIVE = 0
-    SENDING_BIASES = np.array([[1, 2, 1],
-                               [2, -1, 2],
-                               [1, 2, 1]])
     MAN_BIASES = np.array([[0.6, 0.25, 0.6],
                            [0.25, 1, 0.25],
                            [0.6, 0.25, 0.6]])
@@ -46,23 +41,23 @@ class agent:
         self.states_evaluated = 0
         self.tt_time = 0
         while True:
-            best_move, eval = self.minimax(board_state, active_box, won_boxes, counts, man_advantages, start_time, cur_depth, float("-inf"), float("inf"), True)
+            move, eval = self.minimax(board_state, active_box, won_boxes, counts, man_advantages, start_time, cur_depth, float("-inf"), float("inf"), True)
+
+            best_move = move
+            best_eval = eval
 
             if time.perf_counter() - start_time > self.TIME_LIMIT:
                 break
 
-            best_eval = eval
-
-
             cur_depth += 1
 
+        """ Stats """
         #print(f"total time: {time.perf_counter() - start_time}")
-            
-        if best_eval == float("inf"): self.evaluation_over_time.append(100)
-        elif best_eval == float("-inf"): self.evaluation_over_time.append(-100)
-        else: self.evaluation_over_time.append(best_eval)
-        self.depth_over_time.append(cur_depth - 1)
-        self.num_states_over_time.append(self.states_evaluated)
+        # if best_eval == float("inf"): self.evaluation_over_time.append(100)
+        # elif best_eval == float("-inf"): self.evaluation_over_time.append(-100)
+        # else: self.evaluation_over_time.append(best_eval)
+        # self.depth_over_time.append(cur_depth - 1)
+        # self.num_states_over_time.append(self.states_evaluated)
 
         return best_move
 
@@ -101,27 +96,21 @@ class agent:
             bestMove = possible_moves[0]
 
             for move in possible_moves:
-                #if out of time
-                if time.perf_counter() - start_time > self.TIME_LIMIT:
-                    return None, 0
             
                 self.take_turn(1, move, board_state, counts, man_advantages, won_boxes)
 
                 # continue down tree
-                flag, evaluation = self.minimax(board_state, self.get_next_active_box(move, won_boxes, counts), won_boxes, counts, man_advantages, start_time, depth-1, alpha, beta, False)
+                _, evaluation = self.minimax(board_state, self.get_next_active_box(move, won_boxes, counts), won_boxes, counts, man_advantages, start_time, depth-1, alpha, beta, False)
 
-                # if out of time
-                if flag is None:
-                    print(bestMove)
+                #if out of time
+                if time.perf_counter() - start_time > self.TIME_LIMIT:
                     return bestMove, maxEval
-            
-
+                
                 self.undo_turn(1, move, board_state, counts, man_advantages, won_boxes)
 
                 if evaluation > maxEval:
                     maxEval = evaluation
                     bestMove = move
-                
                 
                 # alpha beta pruning
                 alpha = max(alpha, evaluation)
@@ -138,24 +127,18 @@ class agent:
             for move in possible_moves:
                 # if out of time
                 if time.perf_counter() - start_time > self.TIME_LIMIT:
-                    return (-1,-1), 0
+                    return bestMove, minEval
                 
                 self.take_turn(-1, move, board_state, counts, man_advantages, won_boxes)
 
                 # continue down tree
-                flag, evaluation = self.minimax(board_state, self.get_next_active_box(move, won_boxes, counts), won_boxes, counts, man_advantages, start_time, depth-1, alpha, beta, True)
+                _, evaluation = self.minimax(board_state, self.get_next_active_box(move, won_boxes, counts), won_boxes, counts, man_advantages, start_time, depth-1, alpha, beta, True)
 
-                # if out of time
-                if flag is None:
-                    print(bestMove)
-                    return bestMove, minEval
-                
                 self.undo_turn(-1, move, board_state, counts, man_advantages, won_boxes)
 
                 if evaluation < minEval:
                     minEval = evaluation
                     bestMove = move
-                
 
                 # alpha beta pruning
                 beta = min(beta, evaluation)
@@ -201,14 +184,15 @@ class agent:
         self.tt_time += (time.perf_counter() - start_time)
         return self.best_move_table.get(id)
     
+        
+   
     """
             Move ordering
     """
     def move_ordering(self, moves, board_state):
-        # Note: best_move won't be in valid moves if different active box
         start_time = time.perf_counter()
         best_move = self.get_best_move(board_state)
-       
+        
         if best_move is None:
             return
 
@@ -219,16 +203,7 @@ class agent:
         self.tt_time += (time.perf_counter() - start_time)
 
         return
-
-
-    """ Not used """
-    # dont want to give opponent center square or unactive box
-    def active_box_score(self, active_box):
-        if active_box == (-1,-1): return -2
-        return self.SENDING_BIASES[active_box[0],active_box[1]]
  
-    
-
     """ 
             Position Evaluation
     """

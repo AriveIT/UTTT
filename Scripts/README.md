@@ -102,7 +102,11 @@ Win/Loss/Tie vs V9: 8 / 1 / 1
 Depth looks to be at least 6
 
 ## Version 11:
-TT for iterative deepening.
+TT for move ordering for iterative deepening.
+
+## Version 12:
+Stopped throwing out last iteration
+Win/Loss/Tie vs V11: 5 / 1 / 4
 
 
 
