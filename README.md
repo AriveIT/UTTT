@@ -1,5 +1,12 @@
 # UTTT
 
+This is my bot for Uvic AI's Ultimate Tic-Tac-Toe Competition
+
+My bot employs a minimax algorithm with iterative deepening, alpha-beta pruning, a transposition table and position evaluation.
+A more detailed breakdown of the progress can be seen in Scripts/README.md
+
+
+---
 This code will serve as the basis for the UVicAI November 28th 2023 UTTT workshop.
 
 Teams will create a bot that plays UTTT. See [UTTT.ai](https://www.uttt.ai/) for rules and an interactive opponent.
