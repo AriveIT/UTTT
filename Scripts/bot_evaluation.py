@@ -8,7 +8,7 @@ from time import perf_counter
 from tqdm import tqdm
 
 ''' agents '''
-from V11 import agent as last_agent
+from WalmartChessBot import WalmartChessBot as WCB
 from V12 import agent 
 from finns_heuristic_bot import finns_heuristic_bot
 from basic_bots import random_bot
@@ -27,8 +27,8 @@ def main():
     #dev_tool()
 
 def games():
-    agent1 = agent(name = 'V12')
-    agent2 = last_agent(name = 'V11')
+    agent2 = agent(name = 'V12')
+    agent1 = WCB()
 
     stats = run_many_games(agent1 = agent1, agent2 = agent2, n_games = 10)
 

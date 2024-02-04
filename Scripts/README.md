@@ -38,7 +38,7 @@ depth=4
 
 ## Version 4:
 added man-advantages to position evaluation
-i.e. incentivizes having man advantage in as many squares as possible (prioritizing mid, corn, side)
+i.e. incentivizes having man advantage in as many squares as possible (prioritizing mid, corner, then side)
 
 ### Stats:
 Win/Loss/Tie vs Finn: 94 / 0 / 6
